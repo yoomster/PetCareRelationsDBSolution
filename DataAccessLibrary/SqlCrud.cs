@@ -19,14 +19,14 @@ namespace DataAccessLibrary
 
         public List<BasicContactModel> GetAllContacts()
         {
-            string sql = "select Id, FirstName, LastName from dbo.Contacts";
+            string sql = "select Id, FirstName, LastName from dbo.People";
 
             return db.LoadData <BasicContactModel, dynamic > (sql, new { }, _connectionString);
         }
 
         public FullContactModel GetFullContactById(int id)
         {
-            string sql = "select Id, FirstName, LastName from dbo.Contacts where Id = @Id";
+            string sql = "select Id, FirstName, LastName from dbo.People where Id = @Id";
             FullContactModel output = new FullContactModel();
 
             output.BasicInfo = db.LoadData<BasicContactModel, dynamic>(sql, new { Id = id }, _connectionString).FirstOrDefault();
@@ -56,12 +56,12 @@ namespace DataAccessLibrary
 
         public void CreateContact(FullContactModel contact)
         {
-            string sql = "insert into dbo.Contacts (FirstName, LastName) values (@FirstName, @LastName);";
+            string sql = "insert into dbo.People (FirstName, LastName) values (@FirstName, @LastName);";
             db.SaveData(sql, 
                         new {contact.BasicInfo.FirstName, contact.BasicInfo.LastName},
                         _connectionString);
 
-            sql = "select Id from dbo.Contacts where FirstName= @FirstName and LastName= @LastName;";
+            sql = "select Id from dbo.People where FirstName= @FirstName and LastName= @LastName;";
             int contactId = db.LoadData<IdLookUpModel, dynamic>(sql,
                 new { contact.BasicInfo.FirstName, contact.BasicInfo.LastName },
                 _connectionString).First().Id;
@@ -105,7 +105,7 @@ namespace DataAccessLibrary
 
         public void UpdateContactName(BasicContactModel contact)
         {
-            string sql = "update dbo.Contacts set FirstName = @FirstName, LastName = @LastName where Id = @Id;";
+            string sql = "update dbo.People set FirstName = @FirstName, LastName = @LastName where Id = @Id;";
             db.SaveData(sql, contact, _connectionString);
         }
 
@@ -129,7 +129,4 @@ namespace DataAccessLibrary
         }
 
     }
-    //Id, PhoneNumber
-
-
 }
