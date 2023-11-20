@@ -1,105 +1,95 @@
-﻿using DataAccessLibrary;
-using DataAccessLibrary.Models;
+﻿
 using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
+using DataAccessLibrary;
+using DataAccessLibrary.Models;
+using System.Data;
 
-
-
-namespace SqliteUI
+internal class Program
 {
-    class Program
+    private static void Main(string[] args)
     {
-        static void Main(string[] args)
+        SqliteCrud sql = new SqliteCrud(GetConnectionString());
+
+        //ReadAllContacts(sql);
+
+        //ReadContact(sql, 3);
+
+        //CreateNewContact(sql);
+
+        //UpdateContact(sql);
+
+        //RemovePhoneNumberFromContact(sql, 3, 1004);
+
+        Console.WriteLine("Done processing Sqlite ");
+
+
+        Console.ReadLine();
+         
+
+    }
+
+
+    private static void UpdateContact(SqliteCrud sql)
+    {
+        PersonModel contact = new PersonModel
         {
-            //SqliteCrud sql = new SqliteCrud(GetConnectionString());
+            Id = 1,
+            FirstName = "Baby",
+            LastName = "Akil"
+        };
 
-            //ReadAllContacts(sql);
+        sql.UpdateContactName(contact);
 
-            //ReadContact(sql, 13);
+    }
 
-            //CreateNewContact(sql);
-            //ReadAllContacts(sql);
-
-            //UpdateContact(sql);
-
-
-
-            //RemovePhoneNumberFromContact(sql, 1, 1);
-
-
-            Console.WriteLine("Done processing Sqlite");
-
-            Console.ReadLine();
-
-        }
-        private static void RemovePhoneNumberFromContact(SqliteCrud sql, int contactId, int phoneNumberId)
+    private static void CreateNewContact(SqliteCrud sql)
+    {
+        FullContactModel user = new FullContactModel
         {
-            sql.RemovePhoneNumberFromContact(contactId, phoneNumberId);
-        }
-
-        private static void UpdateContact(SqliteCrud sql)
-        {
-            PersonModel contact = new PersonModel
+            BasicInfo = new PersonModel
             {
-                Id = 1,
-                FirstName = "Nayoomi",
-                LastName = "Peeer"
-            };
+                FirstName = "Adam",
+                LastName = "Ak"
+            },
+        };
 
-            sql.UpdateContactName(contact);
-        }
+        user.Addresses.Add(new AddressModel { AddressName = "Street", HouseNumber = "1", Zipcode = "1234AB", City = "Ehv", Country = "NL" });
 
-        private static void CreateNewContact(SqliteCrud sql)
+        user.Employers.Add(new EmployerModel { CompanyName = "Bank", JobTitle = "banking" });
+
+
+        sql.CreateContact(user);
+    }
+
+    private static void ReadAllContacts(SqliteCrud sql)
+    {
+        var rows = sql.GetAllContacts();
+
+        foreach (var row in rows)
         {
-            FullContactModel user = new FullContactModel
-            {
-                BasicInfo = new PersonModel
-                {
-                    FirstName = "Baby",
-                    LastName = "Akil"
-                }
-            };
-
-            user.Addresses.Add(new AddressModel { AddressName ="Street", HouseNumber ="1", Zipcode="1234AB", City="Ehv", Country ="NL" });
-
-
-            user.Employers.Add(new EmployerModel { CompanyName = "Bank", JobTitle = "banking" });
-
-            sql.CreateContact(user);
+            Console.WriteLine($"{row.Id}: {row.FirstName} {row.LastName}");
         }
+    }
 
-        private static void ReadAllContacts(SqliteCrud sql)
-        {
-            var rows = sql.GetAllContacts();
+    private static void ReadContact(SqliteCrud sql, int contactId)
+    {
+        var contact = sql.GetFullContactById(contactId);
 
-            foreach (var row in rows)
-            {
-                Console.WriteLine($"{row.Id}: {row.FirstName} {row.LastName}");
-            }
-        }
+        Console.WriteLine($"{contact.BasicInfo.Id}: {contact.BasicInfo.FirstName} {contact.BasicInfo.LastName}");
+    }
 
-        private static void ReadContact(SqliteCrud sql, int contactId)
-        {
-            var contact = sql.GetFullContactById(contactId);
+    private static string GetConnectionString(string connectionStringName = "Default")
+    {
+        string output = "";
 
-            Console.WriteLine($"{contact.BasicInfo.Id}: {contact.BasicInfo.FirstName} {contact.BasicInfo.LastName}");
-        }
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json");
 
-        private static string GetConnectionString(string connectionStringName = "Default")
-        {
-            string output = "";
+        var config = builder.Build();
 
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+        output = config.GetConnectionString(connectionStringName);
 
-            var config = builder.Build();
-
-            output = config.GetConnectionString(connectionStringName);
-
-            return output;
-        }
-
+        return output;
     }
 }

@@ -35,21 +35,15 @@ internal class Program
 
     private static void UpdateContact(SqlCrud sql)
     {
-        FullContactModel user = new FullContactModel
+        PersonModel contact = new PersonModel
         {
-            BasicInfo = new PersonModel
-            {
-                FirstName = "Baby",
-                LastName = "Akil"
-            }
+            Id = 1,
+            FirstName = "Baby",
+            LastName = "Akil"
         };
 
-        user.Addresses.Add(new AddressModel { HouseNumber = "1001" });
+        sql.UpdateContactName(contact);
 
-
-        user.Employers.Add(new EmployerModel { CompanyName = "Bank & CO"});
-
-        sql.CreateContact(user);
     }
 
     private static void CreateNewContact(SqlCrud sql)
@@ -88,7 +82,6 @@ internal class Program
         Console.WriteLine($"{contact.BasicInfo.Id}: {contact.BasicInfo.FirstName} {contact.BasicInfo.LastName}");
     }
 
-    //unit testing could be great here: test if the connection string is returned
     private static string GetConnectionString(string connectionStringName = "Default")
     {
         string output = "";
