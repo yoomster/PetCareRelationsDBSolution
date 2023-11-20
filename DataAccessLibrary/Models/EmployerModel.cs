@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace DataAccessLibrary.Models
 {
-    public class BasicContactModel
+    public class EmployerModel
     {
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string CompanyName { get; set; }
+        public string JobTitle { get; set; }
 
     }
 }

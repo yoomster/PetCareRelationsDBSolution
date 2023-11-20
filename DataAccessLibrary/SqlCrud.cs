@@ -17,19 +17,19 @@ namespace DataAccessLibrary
             _connectionString = connectionString;
         }
 
-        public List<BasicContactModel> GetAllContacts()
+        public List<PersonModel> GetAllContacts()
         {
-            string sql = "select Id, FirstName, LastName from dbo.People";
+            string sql = "select Id, FirstName, LastName from dbo.Person";
 
-            return db.LoadData <BasicContactModel, dynamic > (sql, new { }, _connectionString);
+            return db.LoadData <PersonModel, dynamic > (sql, new { }, _connectionString);
         }
 
         public FullContactModel GetFullContactById(int id)
         {
-            string sql = "select Id, FirstName, LastName from dbo.People where Id = @Id";
+            string sql = "select Id, FirstName, LastName from dbo.Person where Id = @Id";
             FullContactModel output = new FullContactModel();
 
-            output.BasicInfo = db.LoadData<BasicContactModel, dynamic>(sql, new { Id = id }, _connectionString).FirstOrDefault();
+            output.BasicInfo = db.LoadData<PersonModel, dynamic>(sql, new { Id = id }, _connectionString).FirstOrDefault();
 
             if (output.BasicInfo == null)
             {
@@ -37,61 +37,61 @@ namespace DataAccessLibrary
                 return null;
             }
 
-            sql = @"select e.*, ce.*
-                    from dbo.EmailAddresses e
-                    inner join dbo.ContactEmail ce on ce.EmailAddressId = e.Id
-                    where ce.ContactID = @Id";
+            sql = @"select a.*, ce.*
+                    from dbo.Addresses a
+                    inner join dbo.Employers e on e.AddressesId = a.Id
+     !!               where ce.ContactID = @Id";
 
-            output.EmailAddresses = db.LoadData<EmailAddressModel, dynamic>(sql, new { Id = id }, _connectionString);
+            output.Addresses = db.LoadData<AddressModel, dynamic>(sql, new { Id = id }, _connectionString);
 
             sql = @"select p.*
-                    from dbo.PhoneNumbers p
+                    from dbo.Employers p
                     inner join dbo.ContactPhone cp on cp.PhoneNumberId = p.Id
-                    where cp.ContactID = @Id";
+     !!               where cp.ContactID = @Id";
 
-            output.PhoneNumbers = db.LoadData<PhoneNumberModel, dynamic>(sql, new { Id = id }, _connectionString);
+            output.Employers = db.LoadData<EmployerModel, dynamic>(sql, new { Id = id }, _connectionString);
 
             return output;
         }
 
         public void CreateContact(FullContactModel contact)
         {
-            string sql = "insert into dbo.People (FirstName, LastName) values (@FirstName, @LastName);";
+            string sql = "insert into dbo.Person (FirstName, LastName) values (@FirstName, @LastName);";
             db.SaveData(sql, 
                         new {contact.BasicInfo.FirstName, contact.BasicInfo.LastName},
                         _connectionString);
 
-            sql = "select Id from dbo.People where FirstName= @FirstName and LastName= @LastName;";
-            int contactId = db.LoadData<IdLookUpModel, dynamic>(sql,
+            sql = "select Id from dbo.Person where FirstName= @FirstName and LastName= @LastName;";
+     !!       int contactId = db.LoadData<IdLookUpModel, dynamic>(sql,
                 new { contact.BasicInfo.FirstName, contact.BasicInfo.LastName },
                 _connectionString).First().Id;
 
-            foreach(var phoneNumber in contact.PhoneNumbers)
+            foreach(var employee in contact.Employers)
             {
-                if (phoneNumber.Id== 0)
+                if (employee.Id== 0)
                 {
-                    sql = "insert into dbo.PhoneNumbers(PhoneNumber) values(@PhoneNumber); ";
-                    db.SaveData(sql, new {phoneNumber.PhoneNumber}, _connectionString);
+                    sql = "insert into dbo.Employers(CompanyName) values(@CompanyName); ";
+                    db.SaveData(sql, new {employee.CompanyName }, _connectionString);
 
-                    sql = "select Id from dbo.PhoneNumbers where PhoneNumber = @PhoneNumber;";
-                    phoneNumber.Id = db.LoadData<IdLookUpModel, dynamic>
-                        (sql, new { phoneNumber.PhoneNumber },
+     !!               sql = "select Id from dbo.Employers where CompanyName = @CompanyName;";
+                    employee.Id = db.LoadData<IdLookUpModel, dynamic>
+                        (sql, new { employee.CompanyName },
                         _connectionString).First().Id;
                 }
 
                 sql = "insert into dbo.ContactPhone(ContactID, PhoneNumberId) values(@ContactID, @PhoneNumberId); ";
-                db.SaveData(sql, new {ContactId = contactId, PhoneNumberId = phoneNumber.Id }, _connectionString);
+     !!           db.SaveData(sql, new {ContactId = contactId, PhoneNumberId = employee.Id }, _connectionString);
             }
 
 
-            foreach (var email in contact.EmailAddresses)
+            foreach (var email in contact.Addresses)
             {
                 if (email.Id == 0)
                 {
-                    sql = "insert into dbo.EmailAddresses(EmailAddress) values(@EmailAddress); ";
+                    sql = "insert into dbo.Addresses(EmailAddress) values(@EmailAddress); ";
                     db.SaveData(sql, new { email.EmailAddress }, _connectionString);
 
-                    sql = "select Id from dbo.EmailAddresses where EmailAddress = @EmailAddress;";
+                    sql = "select Id from dbo.Addresses where EmailAddress = @EmailAddress;";
                     email.Id = db.LoadData<IdLookUpModel, dynamic>
                         (sql, new { email.EmailAddress },
                         _connectionString).First().Id;
@@ -103,16 +103,16 @@ namespace DataAccessLibrary
 
         }
 
-        public void UpdateContactName(BasicContactModel contact)
+        public void UpdateContactName(PersonModel contact)
         {
-            string sql = "update dbo.People set FirstName = @FirstName, LastName = @LastName where Id = @Id;";
+            string sql = "update dbo.Person set FirstName = @FirstName, LastName = @LastName where Id = @Id;";
             db.SaveData(sql, contact, _connectionString);
         }
 
         public void RemovePhoneNumberFromContact(int contactId, int phoneNumberId)
         {
             string sql = "select Id, ContactId,PhoneNumberId from dbo.ContactPhone where PhoneNumberId = @PhoneNumberId;";
-            var links = db.LoadData<ContactPhoneNumberModel, dynamic>
+ !!           var links = db.LoadData<ContactEmployerModel, dynamic>
                 (sql, new { PhoneNumberId = phoneNumberId },
                 _connectionString);
 
@@ -120,9 +120,9 @@ namespace DataAccessLibrary
             db.SaveData(sql, new { PhoneNumberId = phoneNumberId, ContactId = contactId },
                 _connectionString );
 
-            if (links.Count == 1)
+ !!           if (links.Count == 1)
             {
-                sql = "delete from dbo.PhoneNumbers where Id = @PhoneNumberId ;";
+                sql = "delete from dbo.Employers where Id = @PhoneNumberId ;";
                 db.SaveData(sql, new { PhoneNumberId = phoneNumberId },
                 _connectionString);
             }
