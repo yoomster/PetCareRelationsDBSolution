@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /SQLServerUI/appsettings.json
 /SQLiteUI/appsettings.json
+/MySqlUI/appsettings.json

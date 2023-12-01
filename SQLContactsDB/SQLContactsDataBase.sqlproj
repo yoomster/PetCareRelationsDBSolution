@@ -3,16 +3,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <Name>SQLPeopleDB</Name>
+    <Name>SQLContactsDataBase</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
-    <ProjectGuid>{41bc62cc-2738-484e-8a38-f3e9e1d0224f}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <ProjectGuid>{c427b783-e1ca-4559-be78-c134583e9fa0}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql160DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
-    <RootNamespace>SQLPeopleDB</RootNamespace>
-    <AssemblyName>SQLPeopleDB</AssemblyName>
+    <RootNamespace>SQLContactsDB</RootNamespace>
+    <AssemblyName>SQLContactsDB</AssemblyName>
     <ModelCollation>1033, CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>
@@ -60,10 +60,13 @@
     <Folder Include="dbo\Tables" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\Person.sql" />
     <Build Include="dbo\Tables\Addresses.sql" />
     <Build Include="dbo\Tables\Employers.sql" />
+    <Build Include="dbo\Tables\Contacts.sql" />
     <Build Include="dbo\Tables\ContactAddress.sql" />
     <Build Include="dbo\Tables\ContactEmployer.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SQLContactsDataBase.publish.xml" />
   </ItemGroup>
 </Project>
