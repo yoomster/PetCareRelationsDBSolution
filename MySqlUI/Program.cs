@@ -8,56 +8,54 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        SqlCrud sql = new SqlCrud(GetConnectionString());
+        MySqlCrud sql = new MySqlCrud(GetConnectionString());
 
         //ReadAllContacts(sql);
-
-        //ReadContact(sql, 3);
 
         //CreateNewContact(sql);
 
         //UpdateContact(sql);
+        //ReadContact(sql, 3);
 
-        //RemovePhoneNumberFromContact(sql, 3, 1004);
-
-        Console.WriteLine("Done processing Sql Server");
+        RemoveEmployerFromContact(sql, 3, 2);
 
 
+        Console.WriteLine("Done processing My Sql");
         Console.ReadLine();
 
 
     }
 
-    private static void RemovePhoneNumberFromContact(SqlCrud sql, int contactId, int phoneNumberId)
+    private static void RemoveEmployerFromContact(MySqlCrud sql, int contactId, int employerId)
     {
-        sql.RemovePhoneNumberFromContact(contactId, phoneNumberId);
+        sql.RemoveEmployerFromContact(contactId, employerId);
     }
 
-    private static void UpdateContact(SqlCrud sql)
+    private static void UpdateContact(MySqlCrud sql)
     {
         PersonModel contact = new PersonModel
         {
-            Id = 1,
-            FirstName = "Adam",
-            LastName = "Akil"
+            Id = 3,
+            FirstName = "Teddy-Saurus",
+            LastName = "Rex"
         };
 
         sql.UpdateContactName(contact);
 
     }
 
-    private static void CreateNewContact(SqlCrud sql)
+    private static void CreateNewContact(MySqlCrud sql)
     {
         FullContactModel user = new FullContactModel
         {
             BasicInfo = new PersonModel
             {
-                FirstName = "Adam",
-                LastName = "Ak"
+                FirstName = "Teddy",
+                LastName = "Akil"
             },
         };
 
-        user.Addresses.Add(new AddressModel { AddressName = "Street", HouseNumber = "1", Zipcode = "1234AB", City = "Ehv", Country = "NL" });
+        user.Addresses.Add(new AddressModel { AddressName = "Frits Philips", HouseNumber = "104", Zipcode = "5616TZ", City = "Ehv", Country = "NL" });
 
         user.Employers.Add(new EmployerModel { CompanyName = "Bank", JobTitle = "banking" });
 
@@ -65,7 +63,7 @@ internal class Program
         sql.CreateContact(user);
     }
 
-    private static void ReadAllContacts(SqlCrud sql)
+    private static void ReadAllContacts(MySqlCrud sql)
     {
         var rows = sql.GetAllContacts();
 
@@ -75,7 +73,7 @@ internal class Program
         }
     }
 
-    private static void ReadContact(SqlCrud sql, int contactId)
+    private static void ReadContact(MySqlCrud sql, int contactId)
     {
         var contact = sql.GetFullContactById(contactId);
 

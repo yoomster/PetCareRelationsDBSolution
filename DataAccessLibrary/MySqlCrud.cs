@@ -100,7 +100,6 @@ namespace DataAccessLibrary
                 sql = "insert into contactemployer(ContactId, EmployerId) values(@ContactID, @EmployerId); ";
                 db.SaveData(sql, new { ContactID = contactId, EmployerId = employer.Id }, _connectionString);
             }
-
         }
 
         public void UpdateContactName(PersonModel contact)
