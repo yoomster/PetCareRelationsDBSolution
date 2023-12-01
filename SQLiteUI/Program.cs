@@ -10,32 +10,34 @@ internal class Program
     {
         SqliteCrud sql = new SqliteCrud(GetConnectionString());
 
-        //ReadAllContacts(sql);
-
-        //ReadContact(sql, 3);
+        ReadAllContacts(sql);
 
         //CreateNewContact(sql);
 
         //UpdateContact(sql);
+        //ReadContact(sql, 3);
 
-        //RemovePhoneNumberFromContact(sql, 3, 1004);
-
-        Console.WriteLine("Done processing Sqlite ");
+        //RemoveEmployerFromContact(sql, 3, 2);
 
 
+        Console.WriteLine("Done processing SQLite");
         Console.ReadLine();
-         
+
 
     }
 
+    private static void RemoveEmployerFromContact(SqliteCrud sql, int contactId, int employerId)
+    {
+        sql.RemoveEmployerFromContact(contactId, employerId);
+    }
 
     private static void UpdateContact(SqliteCrud sql)
     {
         PersonModel contact = new PersonModel
         {
-            Id = 1,
-            FirstName = "Baby",
-            LastName = "Akil"
+            Id = 3,
+            FirstName = "Teddy-Saurus",
+            LastName = "Rex"
         };
 
         sql.UpdateContactName(contact);
@@ -48,12 +50,12 @@ internal class Program
         {
             BasicInfo = new PersonModel
             {
-                FirstName = "Adam",
-                LastName = "Ak"
+                FirstName = "Teddy",
+                LastName = "Akil"
             },
         };
 
-        user.Addresses.Add(new AddressModel { AddressName = "Street", HouseNumber = "1", Zipcode = "1234AB", City = "Ehv", Country = "NL" });
+        user.Addresses.Add(new AddressModel { AddressName = "Frits Philips", HouseNumber = "104", Zipcode = "5616TZ", City = "Ehv", Country = "NL" });
 
         user.Employers.Add(new EmployerModel { CompanyName = "Bank", JobTitle = "banking" });
 

@@ -22,8 +22,6 @@ internal class Program
 
         Console.WriteLine("Done processing My Sql");
         Console.ReadLine();
-
-
     }
 
     private static void RemoveEmployerFromContact(MySqlCrud sql, int contactId, int employerId)

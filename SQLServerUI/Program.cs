@@ -10,36 +10,34 @@ internal class Program
     {
         SqlCrud sql = new SqlCrud(GetConnectionString());
 
-        //ReadAllContacts(sql);
-
-        //ReadContact(sql, 3);
+        ReadAllContacts(sql);
 
         //CreateNewContact(sql);
 
         //UpdateContact(sql);
+        //ReadContact(sql, 3);
 
-        //RemovePhoneNumberFromContact(sql, 3, 1004);
+        //RemoveEmployerFromContact(sql, 3, 2);
+
 
         Console.WriteLine("Done processing Sql Server");
-
-
         Console.ReadLine();
 
 
     }
 
-    private static void RemovePhoneNumberFromContact(SqlCrud sql, int contactId, int phoneNumberId)
+    private static void RemoveEmployerFromContact(SqlCrud sql, int contactId, int employerId)
     {
-        sql.RemovePhoneNumberFromContact(contactId, phoneNumberId);
+        sql.RemoveEmployerFromContact(contactId, employerId);
     }
 
     private static void UpdateContact(SqlCrud sql)
     {
         PersonModel contact = new PersonModel
         {
-            Id = 1,
-            FirstName = "Baby",
-            LastName = "Akil"
+            Id = 3,
+            FirstName = "Teddy-Saurus",
+            LastName = "Rex"
         };
 
         sql.UpdateContactName(contact);
@@ -52,12 +50,12 @@ internal class Program
         {
             BasicInfo = new PersonModel
             {
-                FirstName = "Adam",
-                LastName = "Ak"
+                FirstName = "Teddy",
+                LastName = "Akil"
             },
         };
 
-        user.Addresses.Add(new AddressModel { AddressName = "Street", HouseNumber = "1", Zipcode = "1234AB", City = "Ehv", Country = "NL" });
+        user.Addresses.Add(new AddressModel { AddressName = "Frits Philips", HouseNumber = "104", Zipcode = "5616TZ", City = "Ehv", Country = "NL" });
 
         user.Employers.Add(new EmployerModel { CompanyName = "Bank", JobTitle = "banking" });
 
