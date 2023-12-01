@@ -41,17 +41,14 @@ namespace DataAccessLibrary
             sql = @"select a.*, ca.*
                     from Addresses a
                     inner join ContactAddress ca on ca.AddressId = a.Id
-                    where ca.ContactID = @Id";
+                    where ca.ContactId = @Id";
 
             output.Addresses = db.LoadData<AddressModel, dynamic>(sql, new { Id = id }, _connectionString);
 
-
-
-
             sql = @"select e.*
-                    from Employer e
-                    inner join ContactPhone cp on cp.PhoneNumberId = e.Id
-                    where cp.ContactID = @Id";
+                    from Employers e
+                    inner join Contactemployer ce on ce.EmployerId = e.Id
+                    where ce.ContactId = @Id";
 
             output.Employers = db.LoadData<EmployerModel, dynamic>(sql, new { Id = id }, _connectionString);
 
@@ -60,49 +57,48 @@ namespace DataAccessLibrary
 
         public void CreateContact(FullContactModel contact)
         {
-            string sql = "insert into Contacts (FirstName, LastName) values (@FirstName, @LastName);";
+            string sql = "insert into contacts (FirstName, LastName) values (@FirstName, @LastName);";
             db.SaveData(sql,
                         new { contact.BasicInfo.FirstName, contact.BasicInfo.LastName },
                         _connectionString);
 
-            sql = "select Id from Contacts where FirstName= @FirstName and LastName= @LastName;";
+            sql = "select Id from contacts where FirstName= @FirstName and LastName= @LastName;";
             int contactId = db.LoadData<IdLookUpModel, dynamic>(sql,
                 new { contact.BasicInfo.FirstName, contact.BasicInfo.LastName },
                 _connectionString).First().Id;
 
-            foreach (var phoneNumber in contact.PhoneNumbers)
+            foreach (var address in contact.Addresses)
             {
-                if (phoneNumber.Id == 0)
+                if (address.Id == 0)
                 {
-                    sql = "insert into PhoneNumbers(PhoneNumber) values(@PhoneNumber); ";
-                    db.SaveData(sql, new { phoneNumber.PhoneNumber }, _connectionString);
+                    sql = "insert into addresses(AddressName, HouseNumber, Zipcode, City, Country) values (@AddressName, @HouseNumber, @Zipcode, @City, @Country); ";
+                    db.SaveData(sql, new { address.AddressName, address.HouseNumber, address.Zipcode, address.City, address.Country }, _connectionString);
 
-                    sql = "select Id from PhoneNumbers where PhoneNumber = @PhoneNumber;";
-                    phoneNumber.Id = db.LoadData<IdLookUpModel, dynamic>
-                        (sql, new { phoneNumber.PhoneNumber },
+                    sql = "select Id from addresses where AddressName = @AddressName and HouseNumber= @HouseNumber and Zipcode= @Zipcode and City= @City and Country= @Country;";
+                    address.Id = db.LoadData<IdLookUpModel, dynamic>
+                        (sql, new { address.AddressName, address.HouseNumber, address.Zipcode, address.City, address.Country },
                         _connectionString).First().Id;
                 }
 
-                sql = "insert into ContactPhone(ContactID, PhoneNumberId) values(@ContactID, @PhoneNumberId); ";
-                db.SaveData(sql, new { ContactID = contactId, PhoneNumberId = phoneNumber.Id }, _connectionString);
+                sql = "insert into contactaddress(ContactID, AddressId) values(@ContactId, @AddressId); ";
+                db.SaveData(sql, new { ContactId = contactId, AddressId = address.Id }, _connectionString);
             }
 
-
-            foreach (var email in contact.EmailAddresses)
+            foreach (var employer in contact.Employers)
             {
-                if (email.Id == 0)
+                if (employer.Id == 0)
                 {
-                    sql = "insert into EmailAddresses(EmailAddress) values(@EmailAddress); ";
-                    db.SaveData(sql, new { email.EmailAddress }, _connectionString);
+                    sql = "insert into employers(CompanyName, JobTitle) values(@CompanyName, @JobTitle); ";
+                    db.SaveData(sql, new { employer.CompanyName, employer.JobTitle }, _connectionString);
 
-                    sql = "select Id from EmailAddresses where EmailAddress = @EmailAddress;";
-                    email.Id = db.LoadData<IdLookUpModel, dynamic>
-                        (sql, new { email.EmailAddress },
+                    sql = "select Id from employers where CompanyName = @CompanyName and JobTitle= @JobTitle;";
+                    employer.Id = db.LoadData<IdLookUpModel, dynamic>
+                        (sql, new { employer.CompanyName, employer.JobTitle },
                         _connectionString).First().Id;
                 }
 
-                sql = "insert into ContactEmail(ContactID, EmailAddressId) values(@ContactID, @EmailAddressId); ";
-                db.SaveData(sql, new { ContactID = contactId, EmailAddressId = email.Id }, _connectionString);
+                sql = "insert into contactemployer(ContactId, EmployerId) values(@ContactID, @EmployerId); ";
+                db.SaveData(sql, new { ContactID = contactId, EmployerId = employer.Id }, _connectionString);
             }
 
         }
@@ -113,21 +109,21 @@ namespace DataAccessLibrary
             db.SaveData(sql, contact, _connectionString);
         }
 
-        public void RemovePhoneNumberFromContact(int contactId, int phoneNumberId)
+        public void RemoveEmployerFromContact(int contactId, int employerId)
         {
-            string sql = "select Id, ContactID,PhoneNumberId from ContactPhone where PhoneNumberId = @PhoneNumberId;";
-            var links = db.LoadData<ContactEmployerModel, dynamic>
-                (sql, new { PhoneNumberId = phoneNumberId },
+            string sql = "select Id, ContactId, EmployerId from contactemployer where EmployerId = @EmployerId;";
+            var links = db.LoadData<EmployerModel, dynamic>
+                (sql, new { EmployerId = employerId },
                 _connectionString);
 
-            sql = "delete from ContactPhone where PhoneNumberId = @PhoneNumberId and ContactId= @ContactId;";
-            db.SaveData(sql, new { PhoneNumberId = phoneNumberId, ContactId = contactId },
+            sql = "delete from contactemployer where EmployerId = @EmployerId and ContactId= @ContactId;";
+            db.SaveData(sql, new { EmployerId = employerId, ContactId = contactId },
                 _connectionString);
 
             if (links.Count == 1)
             {
-                sql = "delete from PhoneNumbers where Id = @PhoneNumberId ;";
-                db.SaveData(sql, new { PhoneNumberId = phoneNumberId },
+                sql = "delete from Employers where Id = @EmployerId ;";
+                db.SaveData(sql, new { EmployerId = employerId },
                 _connectionString);
             }
         }
